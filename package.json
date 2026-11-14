@@ -1,0 +1,25 @@
+{
+  "name": "costumecloset-theatre",
+  "version": "1.0.0",
+  "description": "CostumeCloset Theatre - Costume hire management system for tracking which costume is assigned to which actor.",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "keywords": [
+    "express",
+    "sqlite",
+    "costume",
+    "theatre",
+    "hire"
+  ],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.18.2",
+    "sqlite3": "^5.1.7"
+  },
+  "allowScripts": {
+    "sqlite3@5.1.7": true
+  }
+}
