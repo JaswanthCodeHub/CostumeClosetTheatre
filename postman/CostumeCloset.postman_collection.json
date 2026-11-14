@@ -1,0 +1,416 @@
+{
+  "info": {
+    "name": "CostumeCloset Theatre",
+    "description": "Complete Postman collection for CostumeCloset Theatre.\n\nTest Execution Order for Mandatory Tests:\n1. Run ALL folders in order from top to bottom.\n2. The Mandatory Assignment Tests folder MUST run last and in sequence.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:3000", "type": "string" }
+  ],
+  "item": [
+    {
+      "name": "1 - Actors CRUD",
+      "item": [
+        {
+          "name": "Get All Actors",
+          "request": { "method": "GET", "url": { "raw": "{{baseUrl}}/actors", "host": ["{{baseUrl}}"], "path": ["actors"] } },
+          "event": [{ "listen": "test", "script": { "exec": [
+            "pm.test('Status 200', () => pm.response.to.have.status(200));",
+            "pm.test('Is array', () => pm.expect(pm.response.json()).to.be.an('array'));",
+            "pm.test('Has seed actors', () => pm.expect(pm.response.json().length).to.be.at.least(10));"
+          ], "type": "text/javascript" } }]
+        },
+        {
+          "name": "Get Actor by ID",
+          "request": { "method": "GET", "url": { "raw": "{{baseUrl}}/actors/1", "host": ["{{baseUrl}}"], "path": ["actors","1"] } },
+          "event": [{ "listen": "test", "script": { "exec": [
+            "pm.test('Status 200', () => pm.response.to.have.status(200));",
+            "pm.test('Has id and name', () => { var d = pm.response.json(); pm.expect(d).to.have.property('id', 1); pm.expect(d).to.have.property('name'); });"
+          ], "type": "text/javascript" } }]
+        },
+        {
+          "name": "Get Actor - Not Found",
+          "request": { "method": "GET", "url": { "raw": "{{baseUrl}}/actors/999", "host": ["{{baseUrl}}"], "path": ["actors","999"] } },
+          "event": [{ "listen": "test", "script": { "exec": [
+            "pm.test('Status 404', () => pm.response.to.have.status(404));"
+          ], "type": "text/javascript" } }]
+        },
+        {
+          "name": "Add Actor",
+          "request": { "method": "POST", "header": [{"key":"Content-Type","value":"application/json"}], "body": { "mode": "raw", "raw": "{\"name\": \"TestActor\"}" }, "url": { "raw": "{{baseUrl}}/actors", "host": ["{{baseUrl}}"], "path": ["actors"] } },
+          "event": [{ "listen": "test", "script": { "exec": [
+            "pm.test('Status 201', () => pm.response.to.have.status(201));",
+            "pm.test('Returns id and name', () => { var d = pm.response.json(); pm.expect(d).to.have.property('id'); pm.expect(d.name).to.eql('TestActor'); });",
+            "pm.collectionVariables.set('newActorId', pm.response.json().id);"
+          ], "type": "text/javascript" } }]
+        },
+        {
+          "name": "Update Actor",
+          "request": { "method": "PUT", "header": [{"key":"Content-Type","value":"application/json"}], "body": { "mode": "raw", "raw": "{\"name\": \"UpdatedActor\"}" }, "url": { "raw": "{{baseUrl}}/actors/{{newActorId}}", "host": ["{{baseUrl}}"], "path": ["actors","{{newActorId}}"] } },
+          "event": [{ "listen": "test", "script": { "exec": [
+            "pm.test('Status 200', () => pm.response.to.have.status(200));",
+            "pm.test('Name updated', () => pm.expect(pm.response.json().name).to.eql('UpdatedActor'));"
+          ], "type": "text/javascript" } }]
+        },
+        {
+          "name": "Delete Actor",
+          "request": { "method": "DELETE", "url": { "raw": "{{baseUrl}}/actors/{{newActorId}}", "host": ["{{baseUrl}}"], "path": ["actors","{{newActorId}}"] } },
+          "event": [{ "listen": "test", "script": { "exec": [
+            "pm.test('Status 204', () => pm.response.to.have.status(204));"
+          ], "type": "text/javascript" } }]
+        }
+      ]
+    },
+    {
+      "name": "2 - Costumes CRUD",
+      "item": [
+        {
+          "name": "Get All Costumes",
+          "request": { "method": "GET", "url": { "raw": "{{baseUrl}}/costumes", "host": ["{{baseUrl}}"], "path": ["costumes"] } },
+          "event": [{ "listen": "test", "script": { "exec": [
+            "pm.test('Status 200', () => pm.response.to.have.status(200));",
+            "pm.test('Is array with 15 seed costumes', () => pm.expect(pm.response.json().length).to.be.at.least(15));"
+          ], "type": "text/javascript" } }]
+        },
+        {
+          "name": "Get Costume 15",
+          "request": { "method": "GET", "url": { "raw": "{{baseUrl}}/costumes/15", "host": ["{{baseUrl}}"], "path": ["costumes","15"] } },
+          "event": [{ "listen": "test", "script": { "exec": [
+            "pm.test('Status 200', () => pm.response.to.have.status(200));",
+            "pm.test('Costume 15 exists with id 15', () => { var d = pm.response.json(); pm.expect(d.id).to.eql(15); pm.expect(d.name).to.eql('Costume 15'); });"
+          ], "type": "text/javascript" } }]
+        },
+        {
+          "name": "Get Costume - Not Found",
+          "request": { "method": "GET", "url": { "raw": "{{baseUrl}}/costumes/999", "host": ["{{baseUrl}}"], "path": ["costumes","999"] } },
+          "event": [{ "listen": "test", "script": { "exec": [
+            "pm.test('Status 404', () => pm.response.to.have.status(404));"
+          ], "type": "text/javascript" } }]
+        },
+        {
+          "name": "Add Costume",
+          "request": { "method": "POST", "header": [{"key":"Content-Type","value":"application/json"}], "body": { "mode": "raw", "raw": "{\"name\": \"Test Costume\", \"era\": \"Modern\"}" }, "url": { "raw": "{{baseUrl}}/costumes", "host": ["{{baseUrl}}"], "path": ["costumes"] } },
+          "event": [{ "listen": "test", "script": { "exec": [
+            "pm.test('Status 201', () => pm.response.to.have.status(201));",
+            "pm.test('Has id, name, era', () => { var d = pm.response.json(); pm.expect(d).to.have.property('id'); pm.expect(d.name).to.eql('Test Costume'); pm.expect(d.era).to.eql('Modern'); });",
+            "pm.collectionVariables.set('newCostumeId', pm.response.json().id);"
+          ], "type": "text/javascript" } }]
+        },
+        {
+          "name": "Update Costume",
+          "request": { "method": "PUT", "header": [{"key":"Content-Type","value":"application/json"}], "body": { "mode": "raw", "raw": "{\"name\": \"Royal Queen Costume\", \"era\": \"Medieval\"}" }, "url": { "raw": "{{baseUrl}}/costumes/{{newCostumeId}}", "host": ["{{baseUrl}}"], "path": ["costumes","{{newCostumeId}}"] } },
+          "event": [{ "listen": "test", "script": { "exec": [
+            "pm.test('Status 200', () => pm.response.to.have.status(200));",
+            "pm.test('Updated fields', () => { var d = pm.response.json(); pm.expect(d.name).to.eql('Royal Queen Costume'); pm.expect(d.era).to.eql('Medieval'); });"
+          ], "type": "text/javascript" } }]
+        },
+        {
+          "name": "Delete Costume",
+          "request": { "method": "DELETE", "url": { "raw": "{{baseUrl}}/costumes/{{newCostumeId}}", "host": ["{{baseUrl}}"], "path": ["costumes","{{newCostumeId}}"] } },
+          "event": [{ "listen": "test", "script": { "exec": [
+            "pm.test('Status 204', () => pm.response.to.have.status(204));"
+          ], "type": "text/javascript" } }]
+        },
+        {
+          "name": "Search by Era - Victorian",
+          "request": { "method": "GET", "url": { "raw": "{{baseUrl}}/costumes?era=Victorian", "host": ["{{baseUrl}}"], "path": ["costumes"], "query": [{"key":"era","value":"Victorian"}] } },
+          "event": [{ "listen": "test", "script": { "exec": [
+            "pm.test('Status 200', () => pm.response.to.have.status(200));",
+            "pm.test('All Victorian', () => { var d = pm.response.json(); pm.expect(d).to.be.an('array'); pm.expect(d.length).to.be.at.least(1); d.forEach(c => pm.expect(c.era.toLowerCase()).to.eql('victorian')); });"
+          ], "type": "text/javascript" } }]
+        },
+        {
+          "name": "Search by Era - Case Insensitive",
+          "request": { "method": "GET", "url": { "raw": "{{baseUrl}}/costumes?era=victorian", "host": ["{{baseUrl}}"], "path": ["costumes"], "query": [{"key":"era","value":"victorian"}] } },
+          "event": [{ "listen": "test", "script": { "exec": [
+            "pm.test('Status 200', () => pm.response.to.have.status(200));",
+            "pm.test('Case insensitive results', () => pm.expect(pm.response.json().length).to.be.at.least(1));"
+          ], "type": "text/javascript" } }]
+        },
+        {
+          "name": "Search by Era - No Match",
+          "request": { "method": "GET", "url": { "raw": "{{baseUrl}}/costumes?era=NonExistent", "host": ["{{baseUrl}}"], "path": ["costumes"], "query": [{"key":"era","value":"NonExistent"}] } },
+          "event": [{ "listen": "test", "script": { "exec": [
+            "pm.test('Status 200', () => pm.response.to.have.status(200));",
+            "pm.test('Empty array', () => pm.expect(pm.response.json()).to.be.an('array').that.is.empty);"
+          ], "type": "text/javascript" } }]
+        },
+        {
+          "name": "Available Costumes - Valid Date No Hires",
+          "request": { "method": "GET", "url": { "raw": "{{baseUrl}}/costumes/available?date=2027-06-01", "host": ["{{baseUrl}}"], "path": ["costumes","available"], "query": [{"key":"date","value":"2027-06-01"}] } },
+          "event": [{ "listen": "test", "script": { "exec": [
+            "pm.test('Status 200', () => pm.response.to.have.status(200));",
+            "pm.test('All costumes available', () => pm.expect(pm.response.json().length).to.be.at.least(15));"
+          ], "type": "text/javascript" } }]
+        }
+      ]
+    },
+    {
+      "name": "3 - Hires CRUD",
+      "item": [
+        {
+          "name": "Get All Hires (empty)",
+          "request": { "method": "GET", "url": { "raw": "{{baseUrl}}/hires", "host": ["{{baseUrl}}"], "path": ["hires"] } },
+          "event": [{ "listen": "test", "script": { "exec": [
+            "pm.test('Status 200', () => pm.response.to.have.status(200));",
+            "pm.test('Is array', () => pm.expect(pm.response.json()).to.be.an('array'));"
+          ], "type": "text/javascript" } }]
+        },
+        {
+          "name": "Add Hire",
+          "request": { "method": "POST", "header": [{"key":"Content-Type","value":"application/json"}], "body": { "mode": "raw", "raw": "{\"actor_id\": 2, \"costume_id\": 3, \"start_date\": \"2026-12-01\", \"end_date\": \"2026-12-05\"}" }, "url": { "raw": "{{baseUrl}}/hires", "host": ["{{baseUrl}}"], "path": ["hires"] } },
+          "event": [{ "listen": "test", "script": { "exec": [
+            "pm.test('Status 201', () => pm.response.to.have.status(201));",
+            "pm.test('Has all hire fields', () => { var d = pm.response.json(); pm.expect(d).to.have.property('id'); pm.expect(d.actor_id).to.eql(2); pm.expect(d.costume_id).to.eql(3); });",
+            "pm.collectionVariables.set('testHireId', pm.response.json().id);"
+          ], "type": "text/javascript" } }]
+        },
+        {
+          "name": "Get Hire by ID",
+          "request": { "method": "GET", "url": { "raw": "{{baseUrl}}/hires/{{testHireId}}", "host": ["{{baseUrl}}"], "path": ["hires","{{testHireId}}"] } },
+          "event": [{ "listen": "test", "script": { "exec": [
+            "pm.test('Status 200', () => pm.response.to.have.status(200));",
+            "pm.test('Correct hire', () => pm.expect(pm.response.json().actor_id).to.eql(2));"
+          ], "type": "text/javascript" } }]
+        },
+        {
+          "name": "Update Hire",
+          "request": { "method": "PUT", "header": [{"key":"Content-Type","value":"application/json"}], "body": { "mode": "raw", "raw": "{\"actor_id\": 3, \"costume_id\": 5, \"start_date\": \"2026-12-10\", \"end_date\": \"2026-12-15\"}" }, "url": { "raw": "{{baseUrl}}/hires/{{testHireId}}", "host": ["{{baseUrl}}"], "path": ["hires","{{testHireId}}"] } },
+          "event": [{ "listen": "test", "script": { "exec": [
+            "pm.test('Status 200', () => pm.response.to.have.status(200));",
+            "pm.test('Updated', () => { var d = pm.response.json(); pm.expect(d.actor_id).to.eql(3); pm.expect(d.costume_id).to.eql(5); });"
+          ], "type": "text/javascript" } }]
+        },
+        {
+          "name": "Get Hire Details (JOIN)",
+          "request": { "method": "GET", "url": { "raw": "{{baseUrl}}/hires/details", "host": ["{{baseUrl}}"], "path": ["hires","details"] } },
+          "event": [{ "listen": "test", "script": { "exec": [
+            "pm.test('Status 200', () => pm.response.to.have.status(200));",
+            "pm.test('Is array', () => pm.expect(pm.response.json()).to.be.an('array'));",
+            "pm.test('JOIN fields present', () => { var d = pm.response.json(); if(d.length>0) { pm.expect(d[0]).to.have.property('actor_name'); pm.expect(d[0]).to.have.property('costume_name'); pm.expect(d[0]).to.have.property('start_date'); pm.expect(d[0]).to.have.property('end_date'); } });"
+          ], "type": "text/javascript" } }]
+        },
+        {
+          "name": "Delete Hire",
+          "request": { "method": "DELETE", "url": { "raw": "{{baseUrl}}/hires/{{testHireId}}", "host": ["{{baseUrl}}"], "path": ["hires","{{testHireId}}"] } },
+          "event": [{ "listen": "test", "script": { "exec": [
+            "pm.test('Status 204', () => pm.response.to.have.status(204));"
+          ], "type": "text/javascript" } }]
+        },
+        {
+          "name": "Get Hire - Not Found",
+          "request": { "method": "GET", "url": { "raw": "{{baseUrl}}/hires/999", "host": ["{{baseUrl}}"], "path": ["hires","999"] } },
+          "event": [{ "listen": "test", "script": { "exec": [
+            "pm.test('Status 404', () => pm.response.to.have.status(404));"
+          ], "type": "text/javascript" } }]
+        }
+      ]
+    },
+    {
+      "name": "4 - Input Validation",
+      "item": [
+        {
+          "name": "Actor - Missing Name",
+          "request": { "method": "POST", "header": [{"key":"Content-Type","value":"application/json"}], "body": { "mode": "raw", "raw": "{}" }, "url": { "raw": "{{baseUrl}}/actors", "host": ["{{baseUrl}}"], "path": ["actors"] } },
+          "event": [{ "listen": "test", "script": { "exec": [
+            "pm.test('Status 400', () => pm.response.to.have.status(400));",
+            "pm.test('Error message', () => pm.expect(pm.response.json().error).to.include('required'));"
+          ], "type": "text/javascript" } }]
+        },
+        {
+          "name": "Actor - Empty Name",
+          "request": { "method": "POST", "header": [{"key":"Content-Type","value":"application/json"}], "body": { "mode": "raw", "raw": "{\"name\": \"\"}" }, "url": { "raw": "{{baseUrl}}/actors", "host": ["{{baseUrl}}"], "path": ["actors"] } },
+          "event": [{ "listen": "test", "script": { "exec": [
+            "pm.test('Status 400', () => pm.response.to.have.status(400));"
+          ], "type": "text/javascript" } }]
+        },
+        {
+          "name": "Actor - Invalid ID (abc)",
+          "request": { "method": "GET", "url": { "raw": "{{baseUrl}}/actors/abc", "host": ["{{baseUrl}}"], "path": ["actors","abc"] } },
+          "event": [{ "listen": "test", "script": { "exec": [
+            "pm.test('Status 400', () => pm.response.to.have.status(400));",
+            "pm.test('Invalid ID error', () => pm.expect(pm.response.json().error).to.include('Invalid'));"
+          ], "type": "text/javascript" } }]
+        },
+        {
+          "name": "Actor - Invalid ID (-1)",
+          "request": { "method": "GET", "url": { "raw": "{{baseUrl}}/actors/-1", "host": ["{{baseUrl}}"], "path": ["actors","-1"] } },
+          "event": [{ "listen": "test", "script": { "exec": [
+            "pm.test('Status 400', () => pm.response.to.have.status(400));"
+          ], "type": "text/javascript" } }]
+        },
+        {
+          "name": "Actor - Numeric Name",
+          "request": { "method": "POST", "header": [{"key":"Content-Type","value":"application/json"}], "body": { "mode": "raw", "raw": "{\"name\": 123}" }, "url": { "raw": "{{baseUrl}}/actors", "host": ["{{baseUrl}}"], "path": ["actors"] } },
+          "event": [{ "listen": "test", "script": { "exec": [
+            "pm.test('Status 400', () => pm.response.to.have.status(400));"
+          ], "type": "text/javascript" } }]
+        },
+        {
+          "name": "Costume - Missing Fields",
+          "request": { "method": "POST", "header": [{"key":"Content-Type","value":"application/json"}], "body": { "mode": "raw", "raw": "{}" }, "url": { "raw": "{{baseUrl}}/costumes", "host": ["{{baseUrl}}"], "path": ["costumes"] } },
+          "event": [{ "listen": "test", "script": { "exec": [
+            "pm.test('Status 400', () => pm.response.to.have.status(400));"
+          ], "type": "text/javascript" } }]
+        },
+        {
+          "name": "Costume - Empty Era",
+          "request": { "method": "POST", "header": [{"key":"Content-Type","value":"application/json"}], "body": { "mode": "raw", "raw": "{\"name\": \"Test\", \"era\": \"\"}" }, "url": { "raw": "{{baseUrl}}/costumes", "host": ["{{baseUrl}}"], "path": ["costumes"] } },
+          "event": [{ "listen": "test", "script": { "exec": [
+            "pm.test('Status 400', () => pm.response.to.have.status(400));"
+          ], "type": "text/javascript" } }]
+        },
+        {
+          "name": "Costume - Invalid ID",
+          "request": { "method": "GET", "url": { "raw": "{{baseUrl}}/costumes/abc", "host": ["{{baseUrl}}"], "path": ["costumes","abc"] } },
+          "event": [{ "listen": "test", "script": { "exec": [
+            "pm.test('Status 400', () => pm.response.to.have.status(400));"
+          ], "type": "text/javascript" } }]
+        },
+        {
+          "name": "Hire - Missing actor_id",
+          "request": { "method": "POST", "header": [{"key":"Content-Type","value":"application/json"}], "body": { "mode": "raw", "raw": "{\"costume_id\": 3, \"start_date\": \"2026-12-01\", \"end_date\": \"2026-12-05\"}" }, "url": { "raw": "{{baseUrl}}/hires", "host": ["{{baseUrl}}"], "path": ["hires"] } },
+          "event": [{ "listen": "test", "script": { "exec": [
+            "pm.test('Status 400', () => pm.response.to.have.status(400));",
+            "pm.test('actor_id required', () => pm.expect(pm.response.json().error).to.include('actor_id'));"
+          ], "type": "text/javascript" } }]
+        },
+        {
+          "name": "Hire - Missing costume_id",
+          "request": { "method": "POST", "header": [{"key":"Content-Type","value":"application/json"}], "body": { "mode": "raw", "raw": "{\"actor_id\": 1, \"start_date\": \"2026-12-01\", \"end_date\": \"2026-12-05\"}" }, "url": { "raw": "{{baseUrl}}/hires", "host": ["{{baseUrl}}"], "path": ["hires"] } },
+          "event": [{ "listen": "test", "script": { "exec": [
+            "pm.test('Status 400', () => pm.response.to.have.status(400));",
+            "pm.test('costume_id required', () => pm.expect(pm.response.json().error).to.include('costume_id'));"
+          ], "type": "text/javascript" } }]
+        },
+        {
+          "name": "Hire - Invalid Date Format",
+          "request": { "method": "POST", "header": [{"key":"Content-Type","value":"application/json"}], "body": { "mode": "raw", "raw": "{\"actor_id\": 1, \"costume_id\": 3, \"start_date\": \"not-a-date\", \"end_date\": \"2026-12-05\"}" }, "url": { "raw": "{{baseUrl}}/hires", "host": ["{{baseUrl}}"], "path": ["hires"] } },
+          "event": [{ "listen": "test", "script": { "exec": [
+            "pm.test('Status 400', () => pm.response.to.have.status(400));",
+            "pm.test('Date format error', () => pm.expect(pm.response.json().error).to.include('start_date'));"
+          ], "type": "text/javascript" } }]
+        },
+        {
+          "name": "Hire - Invalid Calendar Date (Feb 30)",
+          "request": { "method": "POST", "header": [{"key":"Content-Type","value":"application/json"}], "body": { "mode": "raw", "raw": "{\"actor_id\": 1, \"costume_id\": 3, \"start_date\": \"2026-02-30\", \"end_date\": \"2026-12-05\"}" }, "url": { "raw": "{{baseUrl}}/hires", "host": ["{{baseUrl}}"], "path": ["hires"] } },
+          "event": [{ "listen": "test", "script": { "exec": [
+            "pm.test('Status 400', () => pm.response.to.have.status(400));"
+          ], "type": "text/javascript" } }]
+        },
+        {
+          "name": "Hire - Actor Not Found",
+          "request": { "method": "POST", "header": [{"key":"Content-Type","value":"application/json"}], "body": { "mode": "raw", "raw": "{\"actor_id\": 999, \"costume_id\": 3, \"start_date\": \"2026-12-01\", \"end_date\": \"2026-12-05\"}" }, "url": { "raw": "{{baseUrl}}/hires", "host": ["{{baseUrl}}"], "path": ["hires"] } },
+          "event": [{ "listen": "test", "script": { "exec": [
+            "pm.test('Status 404', () => pm.response.to.have.status(404));",
+            "pm.test('Actor not found', () => pm.expect(pm.response.json().error).to.include('Actor not found'));"
+          ], "type": "text/javascript" } }]
+        },
+        {
+          "name": "Hire - Costume Not Found",
+          "request": { "method": "POST", "header": [{"key":"Content-Type","value":"application/json"}], "body": { "mode": "raw", "raw": "{\"actor_id\": 1, \"costume_id\": 999, \"start_date\": \"2026-12-01\", \"end_date\": \"2026-12-05\"}" }, "url": { "raw": "{{baseUrl}}/hires", "host": ["{{baseUrl}}"], "path": ["hires"] } },
+          "event": [{ "listen": "test", "script": { "exec": [
+            "pm.test('Status 404', () => pm.response.to.have.status(404));",
+            "pm.test('Costume not found', () => pm.expect(pm.response.json().error).to.include('Costume not found'));"
+          ], "type": "text/javascript" } }]
+        },
+        {
+          "name": "Hire - Invalid ID",
+          "request": { "method": "GET", "url": { "raw": "{{baseUrl}}/hires/abc", "host": ["{{baseUrl}}"], "path": ["hires","abc"] } },
+          "event": [{ "listen": "test", "script": { "exec": [
+            "pm.test('Status 400', () => pm.response.to.have.status(400));"
+          ], "type": "text/javascript" } }]
+        },
+        {
+          "name": "Available - Missing Date Param",
+          "request": { "method": "GET", "url": { "raw": "{{baseUrl}}/costumes/available", "host": ["{{baseUrl}}"], "path": ["costumes","available"] } },
+          "event": [{ "listen": "test", "script": { "exec": [
+            "pm.test('Status 400', () => pm.response.to.have.status(400));",
+            "pm.test('Date required error', () => pm.expect(pm.response.json().error).to.include('required'));"
+          ], "type": "text/javascript" } }]
+        },
+        {
+          "name": "Available - Invalid Date",
+          "request": { "method": "GET", "url": { "raw": "{{baseUrl}}/costumes/available?date=invalid", "host": ["{{baseUrl}}"], "path": ["costumes","available"], "query": [{"key":"date","value":"invalid"}] } },
+          "event": [{ "listen": "test", "script": { "exec": [
+            "pm.test('Status 400', () => pm.response.to.have.status(400));"
+          ], "type": "text/javascript" } }]
+        }
+      ]
+    },
+    {
+      "name": "5 - Foreign Key Protection",
+      "item": [
+        {
+          "name": "Setup - Create Hire for FK Test",
+          "request": { "method": "POST", "header": [{"key":"Content-Type","value":"application/json"}], "body": { "mode": "raw", "raw": "{\"actor_id\": 1, \"costume_id\": 3, \"start_date\": \"2027-01-01\", \"end_date\": \"2027-01-05\"}" }, "url": { "raw": "{{baseUrl}}/hires", "host": ["{{baseUrl}}"], "path": ["hires"] } },
+          "event": [{ "listen": "test", "script": { "exec": [
+            "pm.test('Status 201', () => pm.response.to.have.status(201));",
+            "pm.collectionVariables.set('fkHireId', pm.response.json().id);"
+          ], "type": "text/javascript" } }]
+        },
+        {
+          "name": "Delete Actor Referenced in Hire",
+          "request": { "method": "DELETE", "url": { "raw": "{{baseUrl}}/actors/1", "host": ["{{baseUrl}}"], "path": ["actors","1"] } },
+          "event": [{ "listen": "test", "script": { "exec": [
+            "pm.test('Status 400 FK constraint', () => pm.response.to.have.status(400));",
+            "pm.test('Error mentions referenced', () => pm.expect(pm.response.json().error).to.include('referenced'));"
+          ], "type": "text/javascript" } }]
+        },
+        {
+          "name": "Delete Costume Referenced in Hire",
+          "request": { "method": "DELETE", "url": { "raw": "{{baseUrl}}/costumes/3", "host": ["{{baseUrl}}"], "path": ["costumes","3"] } },
+          "event": [{ "listen": "test", "script": { "exec": [
+            "pm.test('Status 400 FK constraint', () => pm.response.to.have.status(400));",
+            "pm.test('Error mentions referenced', () => pm.expect(pm.response.json().error).to.include('referenced'));"
+          ], "type": "text/javascript" } }]
+        },
+        {
+          "name": "Cleanup - Delete FK Test Hire",
+          "request": { "method": "DELETE", "url": { "raw": "{{baseUrl}}/hires/{{fkHireId}}", "host": ["{{baseUrl}}"], "path": ["hires","{{fkHireId}}"] } },
+          "event": [{ "listen": "test", "script": { "exec": [
+            "pm.test('Status 204', () => pm.response.to.have.status(204));"
+          ], "type": "text/javascript" } }]
+        }
+      ]
+    },
+    {
+      "name": "6 - Mandatory Assignment Tests",
+      "description": "Run these IN ORDER. They must execute sequentially after all other folders.",
+      "item": [
+        {
+          "name": "TEST 1 - Invalid Date Range (End before Start → 400)",
+          "request": { "method": "POST", "header": [{"key":"Content-Type","value":"application/json"}], "body": { "mode": "raw", "raw": "{\"actor_id\": 1, \"costume_id\": 15, \"start_date\": \"2026-11-15\", \"end_date\": \"2026-11-10\"}" }, "url": { "raw": "{{baseUrl}}/hires", "host": ["{{baseUrl}}"], "path": ["hires"] } },
+          "event": [{ "listen": "test", "script": { "exec": [
+            "pm.test('Status 400', () => pm.response.to.have.status(400));",
+            "pm.test('Error: End date cannot be earlier than start date', () => pm.expect(pm.response.json().error).to.eql('End date cannot be earlier than start date'));"
+          ], "type": "text/javascript" } }]
+        },
+        {
+          "name": "TEST 2 - Setup: Hire Costume 15 (Nov 10-12)",
+          "request": { "method": "POST", "header": [{"key":"Content-Type","value":"application/json"}], "body": { "mode": "raw", "raw": "{\"actor_id\": 1, \"costume_id\": 15, \"start_date\": \"2026-11-10\", \"end_date\": \"2026-11-12\"}" }, "url": { "raw": "{{baseUrl}}/hires", "host": ["{{baseUrl}}"], "path": ["hires"] } },
+          "event": [{ "listen": "test", "script": { "exec": [
+            "pm.test('Status 201 - Hire created', () => pm.response.to.have.status(201));",
+            "pm.test('Costume 15 hired', () => { var d = pm.response.json(); pm.expect(d.costume_id).to.eql(15); pm.expect(d.start_date).to.eql('2026-11-10'); pm.expect(d.end_date).to.eql('2026-11-12'); });"
+          ], "type": "text/javascript" } }]
+        },
+        {
+          "name": "TEST 2 - Costume 15 Unavailable on Nov 11",
+          "request": { "method": "GET", "url": { "raw": "{{baseUrl}}/costumes/available?date=2026-11-11", "host": ["{{baseUrl}}"], "path": ["costumes","available"], "query": [{"key":"date","value":"2026-11-11"}] } },
+          "event": [{ "listen": "test", "script": { "exec": [
+            "pm.test('Status 200', () => pm.response.to.have.status(200));",
+            "pm.test('Costume 15 is NOT in the list', () => { var d = pm.response.json(); var c15 = d.find(c => c.id === 15); pm.expect(c15).to.be.undefined; });"
+          ], "type": "text/javascript" } }]
+        },
+        {
+          "name": "TEST 3 - Costume 15 Available on Nov 13",
+          "request": { "method": "GET", "url": { "raw": "{{baseUrl}}/costumes/available?date=2026-11-13", "host": ["{{baseUrl}}"], "path": ["costumes","available"], "query": [{"key":"date","value":"2026-11-13"}] } },
+          "event": [{ "listen": "test", "script": { "exec": [
+            "pm.test('Status 200', () => pm.response.to.have.status(200));",
+            "pm.test('Costume 15 IS in the list', () => { var d = pm.response.json(); var c15 = d.find(c => c.id === 15); pm.expect(c15).to.not.be.undefined; pm.expect(c15.name).to.eql('Costume 15'); });"
+          ], "type": "text/javascript" } }]
+        }
+      ]
+    }
+  ]
+}
