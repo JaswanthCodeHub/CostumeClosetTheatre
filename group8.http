@@ -1,0 +1,291 @@
+### ============================================================================
+### CostumeCloset Theatre - REST API Test Suite (Group 08 | YG-CSE2E-G08)
+### Base URL: http://localhost:3000
+### Note: Start the server first with `npm start` inside CostumeCloset Theatre/.
+### Open this file with VS Code REST Client and send requests from top to bottom.
+### Use a test database with seeded Actor 1 and Costume 15. Ensure no existing
+### hire covers Costume 15 on 2026-11-13 before running the mandatory tests.
+### Run each named POST before sending requests that use its returned ID.
+### ============================================================================
+
+
+### ============================================================================
+### 1. SERVER CHECK
+### ============================================================================
+
+# Check the Express API and welcome message (Expect: 200 OK)
+GET http://localhost:3000/
+
+
+### ============================================================================
+### 2. ACTORS - RETRIEVAL, VALIDATION & CRUD
+### ============================================================================
+
+# List all actors (Expect: 200 OK)
+GET http://localhost:3000/actors
+
+###
+
+# Get seeded Actor 1 (Expect: 200 OK)
+GET http://localhost:3000/actors/1
+
+###
+
+# Reject an invalid actor ID (Expect: 400 Bad Request)
+GET http://localhost:3000/actors/abc
+
+###
+
+# Return a missing actor (Expect: 404 Not Found)
+GET http://localhost:3000/actors/2147483647
+
+###
+
+# Reject a whitespace-only actor name (Expect: 400 Bad Request)
+POST http://localhost:3000/actors
+Content-Type: application/json
+
+{
+  "name": "   "
+}
+
+###
+
+# [TEMPORARY TEST DATA] Create an actor (Expect: 201 Created)
+# @name createActor
+POST http://localhost:3000/actors
+Content-Type: application/json
+
+{
+  "name": "REST Client Test Actor"
+}
+
+###
+
+# Update the temporary actor (Expect: 200 OK)
+PUT http://localhost:3000/actors/{{createActor.response.body.$.id}}
+Content-Type: application/json
+
+{
+  "name": "REST Client Updated Actor"
+}
+
+
+### ============================================================================
+### 3. COSTUMES - RETRIEVAL, ERA SEARCH & CRUD
+### ============================================================================
+
+# List all costumes (Expect: 200 OK)
+GET http://localhost:3000/costumes
+
+###
+
+# Get seeded Costume 15 (Expect: 200 OK)
+GET http://localhost:3000/costumes/15
+
+###
+
+# Reject an invalid costume ID (Expect: 400 Bad Request)
+GET http://localhost:3000/costumes/abc
+
+###
+
+# Return a missing costume (Expect: 404 Not Found)
+GET http://localhost:3000/costumes/2147483647
+
+###
+
+# Find costumes from the Victorian era (Expect: 200 OK)
+GET http://localhost:3000/costumes?era=Victorian
+
+###
+
+# Verify case-insensitive era search (Expect: 200 OK)
+GET http://localhost:3000/costumes?era=victorian
+
+###
+
+# Search for an unknown era and verify the response is [] (Expect: 200 OK)
+GET http://localhost:3000/costumes?era=UnknownTestEra
+
+###
+
+# Reject a missing availability date (Expect: 400 Bad Request)
+GET http://localhost:3000/costumes/available
+
+###
+
+# Reject an impossible calendar date (Expect: 400 Bad Request)
+GET http://localhost:3000/costumes/available?date=2026-02-30
+
+###
+
+# Reject an empty costume era (Expect: 400 Bad Request)
+POST http://localhost:3000/costumes
+Content-Type: application/json
+
+{
+  "name": "Test Cloak",
+  "era": "   "
+}
+
+###
+
+# [TEMPORARY TEST DATA] Create a costume (Expect: 201 Created)
+# @name createCostume
+POST http://localhost:3000/costumes
+Content-Type: application/json
+
+{
+  "name": "REST Client Stage Cloak",
+  "era": "Medieval"
+}
+
+###
+
+# Update the temporary costume (Expect: 200 OK)
+PUT http://localhost:3000/costumes/{{createCostume.response.body.$.id}}
+Content-Type: application/json
+
+{
+  "name": "REST Client Royal Cloak",
+  "era": "Medieval"
+}
+
+
+### ============================================================================
+### 4. HIRES - SQL JOIN, VALIDATION, CRUD & FOREIGN KEY PROTECTION
+### ============================================================================
+
+# List all hire records (Expect: 200 OK)
+GET http://localhost:3000/hires
+
+###
+
+# Reject an invalid hire ID (Expect: 400 Bad Request)
+GET http://localhost:3000/hires/abc
+
+###
+
+# Return a missing hire (Expect: 404 Not Found)
+GET http://localhost:3000/hires/2147483647
+
+###
+
+# Reject a hire with an actor ID that does not exist (Expect: 404 Not Found)
+POST http://localhost:3000/hires
+Content-Type: application/json
+
+{
+  "actor_id": 2147483647,
+  "costume_id": 15,
+  "start_date": "2026-11-10",
+  "end_date": "2026-11-12"
+}
+
+###
+
+# [TEMPORARY TEST DATA] Hire the temporary costume for the temporary actor (Expect: 201 Created)
+# @name createHire
+POST http://localhost:3000/hires
+Content-Type: application/json
+
+{
+  "actor_id": {{createActor.response.body.$.id}},
+  "costume_id": {{createCostume.response.body.$.id}},
+  "start_date": "2026-11-20",
+  "end_date": "2026-11-22"
+}
+
+###
+
+# Get the temporary hire by ID (Expect: 200 OK)
+GET http://localhost:3000/hires/{{createHire.response.body.$.id}}
+
+###
+
+# Extend the temporary hire by one day (Expect: 200 OK)
+PUT http://localhost:3000/hires/{{createHire.response.body.$.id}}
+Content-Type: application/json
+
+{
+  "actor_id": {{createActor.response.body.$.id}},
+  "costume_id": {{createCostume.response.body.$.id}},
+  "start_date": "2026-11-20",
+  "end_date": "2026-11-23"
+}
+
+###
+
+# Get joined hire details and check actor_name and costume_name (Expect: 200 OK)
+GET http://localhost:3000/hires/details
+
+###
+
+# Reject deletion of the temporary actor while the hire exists (Expect: 400 Bad Request)
+DELETE http://localhost:3000/actors/{{createActor.response.body.$.id}}
+
+###
+
+# Reject deletion of the temporary costume while the hire exists (Expect: 400 Bad Request)
+DELETE http://localhost:3000/costumes/{{createCostume.response.body.$.id}}
+
+###
+
+# Delete the temporary hire before deleting its actor and costume (Expect: 204 No Content)
+DELETE http://localhost:3000/hires/{{createHire.response.body.$.id}}
+
+###
+
+# Delete the temporary actor (Expect: 204 No Content)
+DELETE http://localhost:3000/actors/{{createActor.response.body.$.id}}
+
+###
+
+# Delete the temporary costume (Expect: 204 No Content)
+DELETE http://localhost:3000/costumes/{{createCostume.response.body.$.id}}
+
+
+### ============================================================================
+### 5. MANDATORY ASSIGNMENT TESTS - COSTUME 15 AVAILABILITY
+### ============================================================================
+
+# Test 1: Reject end_date earlier than start_date. Check the error message: End date cannot be earlier than start date (Expect: 400 Bad Request)
+POST http://localhost:3000/hires
+Content-Type: application/json
+
+{
+  "actor_id": 1,
+  "costume_id": 15,
+  "start_date": "2026-11-15",
+  "end_date": "2026-11-10"
+}
+
+###
+
+# Test 2 setup: Hire Costume 15 for Actor 1 from November 10 to 12 (Expect: 201 Created)
+# @name createMandatoryHire
+POST http://localhost:3000/hires
+Content-Type: application/json
+
+{
+  "actor_id": 1,
+  "costume_id": 15,
+  "start_date": "2026-11-10",
+  "end_date": "2026-11-12"
+}
+
+###
+
+# Test 2: Verify Costume 15 is absent from the November 11 response (Expect: 200 OK)
+GET http://localhost:3000/costumes/available?date=2026-11-11
+
+###
+
+# Test 3: Verify Costume 15 is present in the November 13 response (Expect: 200 OK)
+GET http://localhost:3000/costumes/available?date=2026-11-13
+
+###
+
+# Clean up the hire created for the mandatory tests (Expect: 204 No Content)
+DELETE http://localhost:3000/hires/{{createMandatoryHire.response.body.$.id}}
