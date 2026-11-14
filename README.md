@@ -137,6 +137,7 @@ CostumeCloset Theatre/
 │   ├── POSTMAN_TEST_REPORT.md
 │   └── newman-report.json
 ├── screenshots/
+├── group8.http
 ├── db.js
 ├── server.js
 ├── package.json
@@ -145,18 +146,23 @@ CostumeCloset Theatre/
 └── README.md
 ```
 
-### File and Module Responsibilities
+### File and Module Responsibilities (Five-Member File Ownership)
 
-| File | Responsibility |
-|---|---|
-| `server.js` | Configures Express, mounts the routers, initializes the database, and starts the server |
-| `db.js` | Opens SQLite, enables foreign keys, creates tables, and seeds empty actor and costume tables |
-| `routes/actorRoutes.js` | Implements actor CRUD and validates actor IDs and names |
-| `routes/costumeRoutes.js` | Implements costume CRUD, era search, and date-based availability |
-| `routes/hireRoutes.js` | Implements hire CRUD, date validation, and joined hire reporting |
-| `postman/CostumeCloset.postman_collection.json` | Stores reusable API requests and test assertions |
-| `postman/POSTMAN_TEST_REPORT.md` | Summarizes the recorded integration test run |
-| `postman/newman-report.json` | Stores the machine-readable test report |
+| File / Directory | Owner | Responsibility |
+|---|---|---|
+| `server.js` | **Member 1** (Navaneesh) | Express entry point. Parses JSON requests, mounts `/actors`, `/costumes`, and `/hires`, handles unknown routes and server errors, and starts on port `3000` after SQLite initialization. |
+| `package.json`, `package-lock.json` | **Member 1** (Navaneesh) | Define the `npm start` command and record the Express and SQLite dependencies for reproducible installation with `npm ci`. |
+| `db.js` | **Member 2** (Mahalaxmi) | Opens the SQLite database, enables foreign-key enforcement, creates the `actors`, `costumes`, and `hires` tables, and seeds actors and costumes when their tables are empty. |
+| `database/costume_closet.db` | **Member 2** (Mahalaxmi) | Stores actors, costumes, and hires in a SQLite database. Each hire links an actor and a costume and records a start and end date. |
+| `routes/actorRoutes.js` | **Member 3** (Jaswanth) | Implements actor CRUD and protects actors with existing hire records from deletion. |
+| `routes/costumeRoutes.js` | **Member 3** (Jaswanth) | Implements costume CRUD, case-insensitive era filtering, and date-based availability. |
+| `routes/hireRoutes.js` | **Member 3** (Jaswanth) | Implements hire CRUD and `/hires/details`, which uses SQL JOINs to return actor and costume names with each hire. |
+| `group8.http` | **Member 4** (Ravi Vamsi) | Provides 38 requests for VS Code REST Client. Covers CRUD, validation, and the required tests for reversed hire dates and Costume 15 availability on November 11 and 13. |
+| `postman/CostumeCloset.postman_collection.json` | **Member 5** (Harshavardhan) | Provides the 48-request Postman collection with assertions for CRUD, input validation, foreign-key protection, and the mandatory assignment scenarios. |
+| `README.md` | **Member 5** (Harshavardhan) | Documents setup, architecture, database schema, API endpoints, testing, screenshots, and group contributions. |
+| `postman/POSTMAN_TEST_REPORT.md`, `postman/newman-report.json` | Test evidence | Local test artifacts summarizing the recorded run of 48 requests and 81 passing assertions. |
+| `screenshots/` | Course evidence | Contains 18 images across Figures 1–16, showing project setup, API results, and read-only SQLite verification. |
+| `.gitignore` | Git configuration | Excludes installed dependencies, local SQLite database files, logs, environment files, and OS metadata from new tracking in the local project. |
 
 ---
 
@@ -966,18 +972,13 @@ npx newman run postman/CostumeCloset.postman_collection.json
 
 ### Member-Wise Contribution and Ownership Guide
 
-| Member Name | Roll Number | Responsibility from the project’s existing README |
+| Member | Name | Contribution |
 |---|---|---|
-| To be provided | To be provided | Server setup and route registration |
-| To be provided | To be provided | Database setup and SQL queries |
-| To be provided | To be provided | CRUD endpoints and SQL JOIN |
-| To be provided | To be provided | Input validation and era search |
-| To be provided | To be provided | Date-based availability rule and assignment tests |
-| To be provided | To be provided | Postman collection and README |
-
-### Teamwork and Integration
-
-Enter the actual ownership and individual contribution for each group member before submission. The responsibilities shown above are taken from the project’s existing draft.
+| **Member 1** | Navaneesh | **Part 1 — Express server setup.** Configured the application entry point, middleware, route registration, and startup scripts. |
+| **Member 2** | Mahalaxmi | **Part 2 — SQLite database.** Set up tables, sample data, and the relationships between actors, costumes, and hires. |
+| **Member 3** | Jaswanth | **Part 3 — REST API endpoints.** Implemented routes for actors, costumes, and hires, including the joined hire details response. |
+| **Member 4** | Ravi Vamsi | **Part 4 — Validation and availability tests.** Prepared the REST Client requests that verify reversed-date validation and Costume 15 availability during and after its hire. |
+| **Member 5** | Harshavardhan | **Part 5 — Postman collection and README.** Prepared the API test collection and documented the project and its test evidence. |
 
 ---
 
